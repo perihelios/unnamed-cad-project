@@ -1,8 +1,13 @@
-module reflect(v = [1, 0]) {
+module reflect_x() {
 	children();
-	mirror(v) children();
+	mirror([0, 1]) children();
+}
+
+module reflect_y() {
+	children();
+	mirror([1, 0]) children();
 }
 
 module reflect_xy() {
-	reflect([0, 1]) reflect() children();
+	reflect_x() reflect_y() children();
 }

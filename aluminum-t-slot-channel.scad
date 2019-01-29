@@ -12,28 +12,26 @@ color("silver")
 module channel40x80() {
 	difference() {
 		rounded_rect(80, 40, 3);
-		
-		reflect() {
-			translate([20, 0]) circle(3.5, true);
-		}
 
-		translate([-20, 0]) radial(20, 3, 90, start_angle = 90) rotate(-90) {
+		reflect_y()
+			translate([20, 0])
+			circle(3.5, true);
+
+		reflect_y()
+			translate([-20, 0])
+			radial(20, 3, 90, start_angle = 90)
+			rotate(-90)
 			mountingCutout();
-		}
 
 		diamondCutout();
-
-		translate([20, 0]) radial(20, 3, 90, start_angle = -90) rotate(-90) {
-			mountingCutout();
-		}
 		
-		reflect([0, 1])
+		reflect_x()
 		for (i = [-40 + 4 : 8 : 40]) {
 			translate([i, 20])
 				circle(0.5);
 		}
 		
-		reflect()
+		reflect_y()
 		for (i = [-20 + 4 : 8 : 20]) {
 			translate([-40, i])
 				circle(0.5);
@@ -74,7 +72,7 @@ module mountingCutout() {
 
 		hNarrowOffset = narrowLength / 2 - narrowRadius;
 		
-		hull() reflect() {
+		hull() reflect_y() {
 			translate([0, narrowRadius]) {
 				translate([hWideOffset, vWideOffset])
 					circle(wideRadius);
