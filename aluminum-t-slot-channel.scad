@@ -1,7 +1,9 @@
-use <util/unit.scad>;
-use <util/2d/shape.scad>;
-use <util/2d/reflect.scad>;
+use <util/2d/distribute.scad>;
+use <util/2d/hole.scad>;
 use <util/2d/radial.scad>;
+use <util/2d/reflect.scad>;
+use <util/2d/shape.scad>;
+use <util/unit.scad>;
 
 $fn=100;
 
@@ -24,18 +26,16 @@ module channel40x80() {
 			mountingCutout();
 
 		diamondCutout();
-		
-		reflect_x()
-		for (i = [-40 + 4 : 8 : 40]) {
-			translate([i, 20])
-				circle(0.5);
-		}
-		
-		reflect_y()
-		for (i = [-20 + 4 : 8 : 20]) {
-			translate([-40, i])
-				circle(0.5);
-		}
+
+		reflect_xy()
+			translate([0, 20])
+			distribute_x([4 : 8 : 36])
+			circle(0.5);
+
+		reflect_xy()
+			translate([40, 0])
+			distribute_y([0, 8, 16])
+			circle(0.5);
 	}
 }
 
@@ -57,7 +57,7 @@ module diamondCutout() {
 module mountingCutout() {
 	holeDiameter = 8;
 	holeDepth = 4.5;
-	
+
 	wellDepth = 8;
 	
 	module well(depth) {
@@ -71,8 +71,9 @@ module mountingCutout() {
 		hWideOffset = wideLength / 2 - wideRadius;
 
 		hNarrowOffset = narrowLength / 2 - narrowRadius;
-		
-		hull() reflect_y() {
+
+		hull()
+			reflect_y()
 			translate([0, narrowRadius]) {
 				translate([hWideOffset, vWideOffset])
 					circle(wideRadius);
@@ -80,38 +81,11 @@ module mountingCutout() {
 				translate([hNarrowOffset, 0])
 					circle(narrowRadius);
 			}
-		}
-	}
-	
-	module hole(diameter, depth, chamferingRadius = 1, chamferingOffset = 0.1) {
-		hChamferOffset = diameter / 2 + chamferingRadius;
-		vChamferOffset = depth / 2 - chamferingRadius * (1 - chamferingOffset);
-				
-		translate([0, -depth / 2]) {
-			difference() {
-				square([diameter + chamferingRadius * 2, depth], true);
-				
-				hull() {
-					translate([-hChamferOffset, vChamferOffset])
-						circle(chamferingRadius);
-
-					translate([-hChamferOffset, -vChamferOffset])
-						circle(chamferingRadius);
-				}
-
-				hull() {
-					translate([hChamferOffset, vChamferOffset])
-						circle(chamferingRadius);
-
-					translate([hChamferOffset, -vChamferOffset])
-						circle(chamferingRadius);
-				}
-			}
-		}
-
 	}
 	
 	translate([0, -(wellDepth + holeDepth)])
 		well(wellDepth);
-	hole(holeDiameter, holeDepth);
+
+	translate([0, -holeDepth / 2])
+		hole_chamfer(holeDiameter, holeDepth);
 }
